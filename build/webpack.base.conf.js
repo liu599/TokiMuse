@@ -21,7 +21,10 @@ module.exports = {
   resolve: {
     extensions: ['.js', '.vue', '.json'],
     alias: {
-      '@': resolve('src')
+      '@': resolve('src'),
+      'src': resolve('src'),
+      // 重写静态地址
+      'common': resolve('src/common')
     }
   },
   module: {

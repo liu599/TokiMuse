@@ -1,0 +1,18 @@
+/*一些组件要用到的函数*/
+
+// 文字不折行, 超出显示...
+no-wrap()
+  text-overflow:  ellipsis
+  overflow: hidden
+  white-space: nowrap
+
+// 拓展小图标点击区域
+extend-click()
+  position: relative
+  &:before
+    content: ''
+    position: absolute
+    top: -10px
+    left: -10px
+    right: -10px
+    bottom: -10px
