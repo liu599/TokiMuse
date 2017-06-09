@@ -23,8 +23,9 @@ module.exports = {
     alias: {
       '@': resolve('src'),
       'src': resolve('src'),
-      // 重写静态地址
-      'common': resolve('src/common')
+      // 重写静态地址，主文件树下的都需要
+      'common': resolve('src/common'),
+      'components': resolve('src/components')
     }
   },
   module: {

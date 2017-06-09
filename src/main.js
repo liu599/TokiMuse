@@ -5,7 +5,7 @@ import App from './App'
 
 import 'common/stylus/index.styl'
 
-import fastclick from 'fastclick';
+import fastclick from 'fastclick'
 
 fastclick.attach(document.body)
 
