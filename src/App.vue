@@ -1,6 +1,5 @@
 <template>
   <div id="app">
-    hello world
     <t-header></t-header>
   </div>
 </template>
