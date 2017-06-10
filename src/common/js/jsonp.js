@@ -11,17 +11,17 @@ import originalJSONP from 'jsonp'
 * */
 
 // 对外暴露一个方法
-export default function jsonp(url, data, opt){
+export default function jsonp(url, data, opt) {
   // 没有问号加问号, 没有问号加个&
-  url += (url.indexOf('?')<0 ? '?' : '&') +
+  url += (url.indexOf('?') < 0 ? '?' : '&') +
           param(data)
 
   return new Promise((resolve, reject) => {
-    originalJSONP(url, opt, (err, data)=>{
+    originalJSONP(url, opt, (err, data) => {
       // 当第一个参数为null的时候, 表示获取成功, 这时执行resolve
-      if(!err){
+      if (!err) {
         resolve(data)
-      }else{
+      } else {
         reject(err)
       }
     })
@@ -29,11 +29,11 @@ export default function jsonp(url, data, opt){
 }
 
 //  url拼接
-function param(data){
-  let url=''
-  for(let k in data){
+function param (data) {
+  let url = ''
+  for (let k in data) {
     // 没有的时候传空值
-    let value = data[k]!== undefined ? data[k] : ''
+    let value = data[k] !== undefined ? data[k] : ''
     url += `&${k}=${encodeURIComponent(value)}`
   }
   return url ? url.substring(1) : ''
