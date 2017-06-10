@@ -25,6 +25,7 @@ module.exports = {
       'src': resolve('src'),
       // 重写静态地址，主文件树下的都需要
       'common': resolve('src/common'),
+      'api': resolve('src/api'),
       'components': resolve('src/components')
     }
   },
