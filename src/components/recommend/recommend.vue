@@ -33,6 +33,7 @@
     },
     created() {
       // 组件的生命周期
+      // 如果没有keep-alive标签, 路由切换时获取的数据(mouted需要重新渲染)
       this._getRecommend()
     },
     methods: {
