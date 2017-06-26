@@ -26,6 +26,8 @@ module.exports = {
     //文件末尾空行
     'eol-last': 0,
     // 函数参数前默认空格
-    'space-before-function-paren': 0
+    'space-before-function-paren': 0,
+    // semicon
+    'semi': 0
   }
 }
