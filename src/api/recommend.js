@@ -1,5 +1,6 @@
 import jsonp from 'common/js/jsonp'
 import {commonParams, options} from './config'
+import axios from 'axios'
 
 export function getRecommend() {
   // QQ音乐手机版的API地址
@@ -12,4 +13,27 @@ export function getRecommend() {
   })
 
   return jsonp(url, data, options)
+}
+
+export function getDiscList() {
+  // 设置前端路由转发后, 地址为api
+  const url = '/api/getDiscList'
+
+  const data = Object.assign({}, commonParams, {
+    platform: 'yqq',
+    hostUin: 0,
+    sin: 0,
+    ein: 29,
+    sortId: 5,
+    needNewCode: 0,
+    categoryId: 10000000,
+    rnd: Math.random(),
+    format: 'json' // 默认jsonp
+  })
+
+  return axios.get(url, {
+    params: data
+  }).then((res) => {
+    return Promise.resolve(res.data)
+  })
 }

@@ -114,6 +114,10 @@
           this.slider.goToPage(pageIndex, 0, 400)
         }, this.interval)
       }
+    },
+    // 组件中含有计时器, 在销毁时同时清除计时器
+    destroyed() {
+      clearTimeout(this.timer);
     }
   }
 </script>
