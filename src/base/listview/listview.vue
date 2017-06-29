@@ -1,5 +1,9 @@
 <template>
-  <scroll class="listview" :data="data" ref="listview">
+  <scroll class="listview"
+          :data="data"
+          ref="listview"
+          :listenScroll="listenScroll"
+          @scroll="scroll">
     <ul>
       <li v-for="group in data" class="list-group" ref="listGroup">
         <h2 class="list-group-title">{{group.title}}</h2>
@@ -35,11 +39,19 @@
   export default {
     created() {
       this.touch = {}
+      this.listenScroll = false
+      this.listHeight = []
     },
     props: {
       data: {
         type: Array,
         default: []
+      }
+    },
+    data() {
+      return {
+        currentIndex: 0, // 高亮的行
+        scrollY: -1 // 观测实时滚动位置
       }
     },
     computed: {
@@ -72,8 +84,45 @@
         let anchorIndex = parseInt(this.touch.anchorIndex) + delta
         this._scrollTo(anchorIndex)
       },
+      scroll(pos) {
+        // 需要观测数据, 有data
+        this.scrollY = pos.y
+        // 需要计算数值, 写私有方法
+      },
       _scrollTo(index) {
         this.$refs.listview.scrollToElement(this.$refs.listGroup[index], 0)
+      },
+      _calculateHeight() {
+        this.listHeight = []
+        const list = this.$refs.listGroup
+        let height = 0
+        this.listHeight.push(height)
+        for (let i = 0; i < list.length; i+=1){
+          let item = list[i]
+          height += item.clientHeight
+          this.listHeight.push(height)
+        }
+      }
+    },
+    watch: {
+      data() {
+        // 数据变化 => DOM变化延时，确保所有手机兼容性
+        setTimeout(() => {
+          this._calculateHeight()
+        }, 20)
+      },
+      scrollY(newY) {
+        const listHeight = this.listHeight
+        for (let i = 0; i < listHeight.length; i+=1){
+          let height1 = listHeight[i]
+          let height2 = listHeight[i + 1]
+          if (!height2 || (-newY > height1 && -newY <  height2) ){
+            this.currentIndex = 1
+            console.log(this.currentIndex)
+            return
+          }
+        }
+        this.currentIndex = 0
       }
     },
     components: {
