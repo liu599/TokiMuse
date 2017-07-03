@@ -97,7 +97,7 @@
         const list = this.$refs.listGroup
         let height = 0
         this.listHeight.push(height)
-        for (let i = 0; i < list.length; i+=1){
+        for (let i = 0; i < list.length; i += 1) {
           let item = list[i]
           height += item.clientHeight
           this.listHeight.push(height)
@@ -113,10 +113,10 @@
       },
       scrollY(newY) {
         const listHeight = this.listHeight
-        for (let i = 0; i < listHeight.length; i+=1){
+        for (let i = 0; i < listHeight.length; i += 1) {
           let height1 = listHeight[i]
           let height2 = listHeight[i + 1]
-          if (!height2 || (-newY > height1 && -newY <  height2) ){
+          if (!height2 || (-newY > height1 && -newY < height2)) {
             this.currentIndex = 1
             console.log(this.currentIndex)
             return

@@ -1,4 +1,4 @@
-# tokimusicapp
+# Tokei Music App
 
 > A music app built with vue-framework
 
