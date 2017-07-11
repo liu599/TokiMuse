@@ -20,11 +20,19 @@
          @touchmove.stop.prevent = "onShortcutTouchMove"
          @touchend.stop>
       <ul>
-        <li v-for="(item, index) in shortcutList" :data-index = "index"
-            class="item">
+        <li v-for="(item, index) in shortcutList"
+            :data-index = "index"
+            class="item"
+            :class="{'current':currentIndex===index}">
           {{item}}
         </li>
       </ul>
+    </div>
+    <div class="list-fixed" ref="fixed" v-show="fixedTitle">
+      <div class="fixed-title">{{fixedTitle}}</div>
+    </div>
+    <div v-show="!data.length" class="loading-container">
+      <loading></loading>
     </div>
   </scroll>
 </template>
@@ -32,26 +40,18 @@
 <script type="text/ecmascript-6">
   import Scroll from 'base/scroll/scroll'
   import {getData} from 'common/js/dom'
+  import Loading from 'base/loading/loading'
 
   // 规定锚点高度
   const ANCHOR_HEIGHT = 18
+  // 规定标题高度
+  const TITLE_HEIGHT = 30
 
   export default {
-    created() {
-      this.touch = {}
-      this.listenScroll = false
-      this.listHeight = []
-    },
     props: {
       data: {
         type: Array,
         default: []
-      }
-    },
-    data() {
-      return {
-        currentIndex: 0, // 高亮的行
-        scrollY: -1 // 观测实时滚动位置
       }
     },
     computed: {
@@ -61,9 +61,31 @@
           // title 集合数组, 计算属性
           return group.title.substr(0, 1)
         })
+      },
+      fixedTitle() {
+        if (this.scrollY > 0) {
+          return ''
+        }
+        return this.data[this.currentIndex] ? this.data[this.currentIndex].title : ''
       }
     },
+    data() {
+      return {
+        currentIndex: 0, // 高亮的行
+        scrollY: -1, // 观测实时滚动位置
+        diff: -1
+      }
+    },
+    created() {
+      this.probType = 3
+      this.touch = {}
+      this.listenScroll = false
+      this.listHeight = []
+    },
     methods: {
+      selectItem(item) {
+        this.$emit('select', item)
+      },
       onShortcutTouchStart(e) {
         // 判断列表第几个元素
         // 封装dom方法, 获取参数
@@ -74,6 +96,8 @@
         // console.log(anchorIndex);
         // 封装scroll方法滚动到固定位置, 第二个参数是滚动时间
         this.touch.y1 = firstTouch.pageY
+        this.touch.anchorIndex = anchorIndex
+
         this._scrollTo(anchorIndex)
       },
       onShortcutTouchMove(e) {
@@ -84,12 +108,24 @@
         let anchorIndex = parseInt(this.touch.anchorIndex) + delta
         this._scrollTo(anchorIndex)
       },
+      refresh() {
+        this.$refs.listview.refresh()
+      },
       scroll(pos) {
         // 需要观测数据, 有data
         this.scrollY = pos.y
         // 需要计算数值, 写私有方法
       },
       _scrollTo(index) {
+        if (!index && index !== 0) {
+          return
+        }
+        if (index < 0) {
+          index = 0
+        } else if (index > this.listHeight.length - 2) {
+          index = this.listHeight.length - 2
+        }
+        this.scrollY = -this.listHeight[index]
         this.$refs.listview.scrollToElement(this.$refs.listGroup[index], 0)
       },
       _calculateHeight() {
@@ -113,20 +149,39 @@
       },
       scrollY(newY) {
         const listHeight = this.listHeight
-        for (let i = 0; i < listHeight.length; i += 1) {
+        // 当滚动到 顶部newY > 0
+        if (newY > 0) {
+          this.currentIndex = 0
+          return
+        }
+        // 在中间部分滚动, 列表部分每一个部分的上限和下限重叠
+        for (let i = 0; i < listHeight.length - 1; i += 1) {
           let height1 = listHeight[i]
           let height2 = listHeight[i + 1]
-          if (!height2 || (-newY > height1 && -newY < height2)) {
-            this.currentIndex = 1
-            console.log(this.currentIndex)
+          if (-newY >= height1 && -newY < height2) {
+            this.currentIndex = i
+            this.diff = height2 + newY
+            // console.log(this.currentIndex)
             return
           }
         }
-        this.currentIndex = 0
+        // 当滚动到底部, 并且 -newY > 最后一个元素的上限
+        this.currentIndex = listHeight - 2
+
+        // this.currentIndex = 0
+      },
+      diff(newVal) {
+        let fixedTop = (newVal > 0 && newVal < TITLE_HEIGHT) ? newVal - TITLE_HEIGHT : 0
+        if (this.fixedTop === fixedTop) {
+          return
+        }
+        this.fixedTop = fixedTop
+        this.$refs.fixed.style.transform = `translate3d(0, ${fixedTop}px, 0)`
       }
     },
     components: {
-      Scroll
+      Scroll,
+      Loading
     }
   }
 
@@ -180,7 +235,7 @@
         color: $color-font-link
         font-size: $font-size-small
         &.current
-          color: $color-primary-dark
+          color: chocolate
     .list-fixed
       position: absolute
       top: 0
@@ -190,9 +245,9 @@
         height: 30px
         line-height: 30px
         padding-left: 20px
-        font-size: $font-size-small
-        color: $color-primary
-        background: $color-bg
+        font-size: $font-size-medium-x
+        color: $color-font-title
+        background: $color-border
     .loading-container
       position: absolute
       width: 100%
