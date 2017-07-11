@@ -2,6 +2,8 @@
 
 > A music app built with vue-framework
 
+> This is an experimental app
+
 ## Build Setup
 
 ``` bash
