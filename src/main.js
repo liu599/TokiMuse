@@ -8,6 +8,8 @@ import 'common/stylus/index.styl'
 import fastclick from 'fastclick'
 import VueLazyLoad from 'vue-lazyload'
 
+import store from './store'
+
 fastclick.attach(document.body)
 
 Vue.use(VueLazyLoad, {
@@ -17,6 +19,7 @@ Vue.use(VueLazyLoad, {
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
-  router,
-  render: h => h(App)
+  render: h => h(App),
+  store,
+  router
 })

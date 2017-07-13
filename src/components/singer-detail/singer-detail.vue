@@ -5,7 +5,17 @@
 </template>
 
 <script type="text/ecmascript-6">
-
+  import { mapGetters } from 'vuex';
+  export default {
+    computed: {
+      ...mapGetters([
+        'singer'
+      ])
+    },
+    create() {
+      console.log(this.singer)
+    }
+  }
 </script>
 
 <style scoped lang="stylus" rel="stylesheet/stylus">
