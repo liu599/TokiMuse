@@ -6,6 +6,8 @@ import Search from 'components/search/search'
 import Singer from 'components/singer/singer'
 import Radio from 'components/radio/radio'
 
+import SingerDetail from 'components/singer-detail/singer-detail'
+
 // 注册路由
 Vue.use(Router)
 
@@ -39,7 +41,13 @@ export default new Router({
     {
       path: '/singer',
       name: 'Singer',
-      component: Singer
+      component: Singer,
+      children: [
+        {
+          path: ':id',
+          component: SingerDetail
+        }
+      ]
     }
   ]
 })
