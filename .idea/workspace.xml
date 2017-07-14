@@ -35,8 +35,8 @@
       <file leaf-file-name="music-list.vue" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/components/music-list/music-list.vue">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="119">
-              <caret line="7" column="38" lean-forward="true" selection-start-line="7" selection-start-column="38" selection-end-line="7" selection-end-column="38" />
+            <state relative-caret-position="-23">
+              <caret line="17" column="41" lean-forward="true" selection-start-line="17" selection-start-column="41" selection-end-line="17" selection-end-column="41" />
               <folding>
                 <element signature="e#959#998#0" expanded="true" />
               </folding>
@@ -889,12 +889,12 @@
       <workItem from="1497282365499" duration="672000" />
       <workItem from="1498488048924" duration="27220000" />
       <workItem from="1499532120171" duration="4125000" />
-      <workItem from="1499957872018" duration="14192000" />
+      <workItem from="1499957872018" duration="14327000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="78957000" />
+    <option name="totallyTimeSpent" value="79092000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1391" height="797" extended-state="0" />
@@ -1359,8 +1359,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/components/music-list/music-list.vue">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="119">
-          <caret line="7" column="38" lean-forward="true" selection-start-line="7" selection-start-column="38" selection-end-line="7" selection-end-column="38" />
+        <state relative-caret-position="-23">
+          <caret line="17" column="41" lean-forward="true" selection-start-line="17" selection-start-column="41" selection-end-line="17" selection-end-column="41" />
           <folding>
             <element signature="e#959#998#0" expanded="true" />
           </folding>
