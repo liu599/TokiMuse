@@ -18,7 +18,7 @@
             :listen-scroll="listenScroll"
             :data="songs" class="list" ref="list">
       <div class="song-list-wrapper">
-        <song-list :songs="songs"></song-list>
+        <song-list @select="selectItem" :songs="songs"></song-list>
       </div>
       <div v-show="!songs.length" class="loading-container">
         <loading></loading>
@@ -31,6 +31,7 @@
   import Loading from 'base/loading/loading'
   import SongList from 'base/song-list/song-list'
   import { prefixStyle } from 'common/js/dom'
+  import { mapActions } from 'vuex'
 
   const RESERVED_HEIGHT = 40
   const transform = prefixStyle('transform')
@@ -67,7 +68,22 @@
       },
       back() {
         this.$router.back()
-      }
+      },
+      selectItem(item, index) {
+        // 设置playlist, sequencelist,
+        // 设置playerState，
+        // 设置fullScreen
+        // 实质提交Mutations
+        // 多次提交mutation需要封装actions
+        // 业务组件不需要用到基础组件的所有参数，根据实际情况
+        this.selectPlay({
+          list: this.songs,
+          index
+        })
+      },
+      ...mapActions([
+        'selectPlay'
+      ])
     },
     watch: {
       scrollY(newY) {

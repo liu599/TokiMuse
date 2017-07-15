@@ -5,6 +5,7 @@
     <keep-alive>
       <router-view></router-view>
     </keep-alive>
+    <player></player>
   </div>
 </template>
 
@@ -13,19 +14,18 @@
   import THeader from 'components/t-header/t-header'
   // 注册Tab
   import Tab from 'components/tab/tab'
+  // 注册播放器
+  import Player from 'components/player/player'
 
   export default {
     name: 'app',
     components: {
       THeader,
-      Tab
+      Tab,
+      Player
     }
   }
 </script>
 
 <style scoped lang="stylus" rel="stylesheet/stylus">
-  @import "~common/stylus/variable"
-
-  #app
-    color: $color-primary
 </style>
