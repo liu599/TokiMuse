@@ -1,21 +1,92 @@
 <template>
   <div class="player" v-show="playlist.length>0">
     <div class="normal-player" v-show="fullScreen">
-      播放器
+      <div class="background">
+        <img width="100%" height="100%" :src="currentSong.image">
+      </div>
+      <div class="top">
+        <div class="back" @click="back">
+          <i class="anticon icon-downcircleo"></i>
+        </div>
+        <h1 class="title" v-html="currentSong.name"></h1>
+        <h2 class="subtitle" v-html="currentSong.singer"></h2>
+      </div>
+      <div class="middle">
+        <div class="middle-l">
+          <div class="cd-wrapper">
+            <div class="cd">
+              <img class="image" :src="currentSong.image">
+            </div>
+          </div>
+          <div class="playing-lyric-wrapper">
+            <div class="playing-lyric"></div>
+          </div>
+        </div>
+      </div>
+      <div class="bottom">
+        <div class="dotwrapper"></div>
+        <div class="progress-wrapper">
+          <div class="progress-bar-wrapper"></div>
+          <span class="time time-r"></span>
+        </div>
+        <div class="operators">
+          <div class="icon i-left">
+            <i></i>
+          </div>
+          <div class="icon i-left">
+            <i class="anticon icon-stepbackward"></i>
+          </div>
+          <div class="icon i-center">
+            <i class="anticon icon-play"></i>
+          </div>
+          <div class="icon i-right">
+            <i class="anticon icon-stepforward"></i>
+          </div>
+          <div class="icon i-right">
+            <i class="anticon icon-unlock"></i>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="mini-player" v-show="!fullScreen"></div>
+    <div class="mini-player" v-show="!fullScreen" @click="open">
+      <div class="icon">
+        <img width="40" height="40" :src="currentSong.image">
+      </div>
+      <div class="text">
+        <h2 class="name" v-html="currentSong.name"></h2>
+        <p class="desc" v-html="currentSong.singer"></p>
+      </div>
+      <div class="control"></div>
+      <div class="control">
+        <i class="anticon icon-menufold"></i>
+      </div>
+    </div>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
-  import { mapGetters } from 'vuex'
+  import { mapGetters, mapMutations } from 'vuex'
 
   export default {
     computed: {
       ...mapGetters([
         'fullScreen',
-        'playlist'
+        'playlist',
+        'currentSong'
       ])
+    },
+    methods: {
+      back() {
+        // 不能直接修改
+       // this.fullScreen = false
+        this.setFullScreen(false)
+      },
+      open() {
+        this.setFullScreen(true)
+      },
+      ...mapMutations({
+        setFullScreen: 'SET_FULL_SCREEN'
+      })
     }
   }
 </script>
@@ -50,12 +121,12 @@
           top: 0
           left: 6px
           z-index: 50
-          .icon-back
+          .icon-downcircleo
             display: block
             padding: 9px
             font-size: $font-size-large-x
             color: deeppink
-            transform: rotate(-90deg)
+            transform: rotate(0deg)
         .title
           width: 70%
           margin: 0 auto
