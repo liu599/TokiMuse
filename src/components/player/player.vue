@@ -19,7 +19,7 @@
         <div class="middle">
           <div class="middle-l">
             <div class="cd-wrapper" ref="cdWrapper">
-              <div class="cd">
+              <div class="cd" :class="cdCls">
                 <img class="image" :src="currentSong.image">
               </div>
             </div>
@@ -42,13 +42,13 @@
               <i class="anticon icon-stepbackward"></i>
             </div>
             <div class="icon i-center">
-              <i class="anticon icon-play"></i>
+              <i @click="togglePlaying" :class="playIcon"></i>
             </div>
             <div class="icon i-right">
               <i class="anticon icon-stepforward"></i>
             </div>
             <div class="icon i-right">
-              <i class="anticon icon-unlock"></i>
+              <i class="anticon icon-hearto"></i>
             </div>
           </div>
         </div>
@@ -57,19 +57,21 @@
     <transition name="mini">
       <div class="mini-player" v-show="!fullScreen" @click="open">
         <div class="icon">
-          <img width="40" height="40" :src="currentSong.image">
+          <img :class="cdCls" width="40" height="40" :src="currentSong.image">
         </div>
         <div class="text">
           <h2 class="name" v-html="currentSong.name"></h2>
           <p class="desc" v-html="currentSong.singer"></p>
         </div>
-        <div class="control"></div>
+        <div class="control">
+          <i @click.stop="togglePlaying" :class="playMiniIcon"></i>
+        </div>
         <div class="control">
           <i class="anticon icon-menufold"></i>
         </div>
       </div>
     </transition>
-
+    <audio ref="audio" :src="currentSong.url"></audio>
   </div>
 </template>
 
@@ -81,11 +83,35 @@
   const transform = prefixStyle('transform')
   export default {
     computed: {
+      cdCls() {
+        return this.playing ? 'play' : 'play pause'
+      },
+      playIcon() {
+        return this.playing ? 'anticon icon-pausecircle' : 'anticon icon-play'
+      },
+      playMiniIcon() {
+        return this.playing ? 'anticon icon-pausecircle' : 'anticon icon-play'
+      },
       ...mapGetters([
         'fullScreen',
         'playlist',
-        'currentSong'
+        'currentSong',
+        'playing'
       ])
+    },
+    watch: {
+      currentSong() {
+        // DOM 要ready后
+        this.$nextTick(() => {
+          this.$refs.audio.play()
+        })
+      },
+      playing(newPlaying) {
+        const audio = this.$refs.audio
+        this.$nextTick(() => {
+          newPlaying ? audio.play() : audio.pause()
+        })
+      }
     },
     methods: {
       back() {
@@ -137,6 +163,10 @@
         this.$refs.cdWrapper.style.transition = ''
         this.$refs.cdWrapper.style[transform] = ''
       },
+      togglePlaying() {
+        // 获取playing状态
+        this.setPlayingState(!this.playing)
+      },
       _getPosAndScale() {
         // 获取初始的位置
         const targetWidth = 40
@@ -154,7 +184,8 @@
         }
       },
       ...mapMutations({
-        setFullScreen: 'SET_FULL_SCREEN'
+        setFullScreen: 'SET_FULL_SCREEN',
+        setPlayingState: 'SET_PLAYING_STATE'
       })
     }
   }
@@ -385,9 +416,9 @@
         flex: 0 0 30px
         width: 30px
         padding: 0 10px
-        .icon-play-mini, .icon-pause-mini, .icon-playlist
+        .icon-play, .icon-pausecircle, .icon-menufold
           font-size: 30px
-          color: $color-primary
+          color: $color-content
         .icon-mini
           font-size: 32px
           position: absolute
