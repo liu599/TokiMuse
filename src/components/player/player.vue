@@ -27,6 +27,16 @@
               <div class="playing-lyric"></div>
             </div>
           </div>
+          <div class="middle-r" ref="lyricList">
+            <div class="lyric-wrapper">
+              <div v-if="currentLyric">
+                <p class="text"
+                   :class="{'current': currentLineNumber === index}"
+                   ref="lyricLine"
+                   v-for="(line, index) in currentLyric.lines">{{line.txt}}</p>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="bottom">
           <div class="dotwrapper"></div>
@@ -91,13 +101,17 @@
   import {playMode} from 'common/js/config'
   import {shuffle} from 'common/js/util'
 
+  import Lyric from 'lyric-parser'
+
   const transform = prefixStyle('transform')
   export default {
     data() {
       // 标志
       return {
         songReady: false,
-        currentTime: 0
+        currentTime: 0,
+        currentLyric: null,
+        currentLineNumber: 0
       }
     },
     computed: {
@@ -138,6 +152,7 @@
         // DOM 要ready后
         this.$nextTick(() => {
           this.$refs.audio.play()
+          this.getLyric()
         })
       },
       playing(newPlaying) {
@@ -285,6 +300,19 @@
           return item.id === this.currentSong.id
         })
         this.setCurrentIndex(index)
+      },
+      getLyric() {
+        this.currentSong.getLyric().then((lyric) => {
+          this.currentLyric = new Lyric(lyric, this.handleLyric)
+          if (this.playing) {
+            this.currentLyric.play()
+          }
+          // console.log(this.currentLyric)
+        })
+      },
+      handleLyric ({lineNum, txt}) {
+        // 每次都调用
+        this.currentLineNumber = lineNum
       },
       _pad(num, n = 2) {
         let len = num.toString().length
@@ -434,7 +462,7 @@
             text-align: center
             .text
               line-height: 32px
-              color: $color-primary-light
+              color: $color-content
               font-size: $font-size-medium
               &.current
                 color: $color-primary-dark
