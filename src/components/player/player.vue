@@ -31,21 +31,23 @@
         <div class="bottom">
           <div class="dotwrapper"></div>
           <div class="progress-wrapper">
-            <div class="progress-bar-wrapper"></div>
-            <span class="time time-r"></span>
+            <span class="time time-l">{{format(currentTime)}}</span>
+            <div class="progress-bar-wrapper">
+            </div>
+            <span class="time time-r">{{format(currentSong.duration)}}</span>
           </div>
           <div class="operators">
             <div class="icon i-left">
               <i class="anticon icon-retweet"></i>
             </div>
-            <div class="icon i-left">
-              <i class="anticon icon-stepbackward"></i>
+            <div class="icon i-left" :class="disableCls">
+              <i @click="prev" class="anticon icon-stepbackward"></i>
             </div>
-            <div class="icon i-center">
+            <div class="icon i-center" :class="disableCls">
               <i @click="togglePlaying" :class="playIcon"></i>
             </div>
-            <div class="icon i-right">
-              <i class="anticon icon-stepforward"></i>
+            <div class="icon i-right" :class="disableCls">
+              <i @click="next" class="anticon icon-stepforward"></i>
             </div>
             <div class="icon i-right">
               <i class="anticon icon-hearto"></i>
@@ -71,7 +73,7 @@
         </div>
       </div>
     </transition>
-    <audio ref="audio" :src="currentSong.url"></audio>
+    <audio ref="audio" :src="currentSong.url" @canplay="ready" @error="error" @timeupdate="updateTime"></audio>
   </div>
 </template>
 
@@ -82,6 +84,13 @@
 
   const transform = prefixStyle('transform')
   export default {
+    data() {
+      // 标志
+      return {
+        songReady: false,
+        currentTime: 0
+      }
+    },
     computed: {
       cdCls() {
         return this.playing ? 'play' : 'play pause'
@@ -92,11 +101,15 @@
       playMiniIcon() {
         return this.playing ? 'anticon icon-pausecircle' : 'anticon icon-play'
       },
+      disableCls() {
+        return this.songReady ? '' : 'disable'
+      },
       ...mapGetters([
         'fullScreen',
         'playlist',
         'currentSong',
-        'playing'
+        'playing',
+        'currentIndex'
       ])
     },
     watch: {
@@ -167,6 +180,59 @@
         // 获取playing状态
         this.setPlayingState(!this.playing)
       },
+      prev() {
+        if (!this.songReady) {
+          return
+        }
+        let index = this.currentIndex - 1
+        if (index === -1) {
+          index = this.playlist.length - 1
+        }
+        this.setCurrentIndex(index)
+        if (!this.playing) {
+          this.togglePlaying()
+        }
+        this.songReady = false
+      },
+      next() {
+        if (!this.songReady) {
+          return
+        }
+        let index = this.currentIndex + 1
+        if (index === this.playlist.length) {
+          index = 0
+        }
+        this.setCurrentIndex(index)
+        if (!this.playing) {
+          this.togglePlaying()
+        }
+        this.songReady = false
+      },
+      ready() {
+        this.songReady = true
+      },
+      error() {
+        // 加载失败不会影响正常使用
+        this.songReady = true
+      },
+      updateTime(e) {
+        this.currentTime = e.target.currentTime
+      },
+      format(interval) {
+        // 向下取整
+        interval = interval | 0
+        const minute = interval / 60 | 0
+        const second = this._pad(interval % 60)
+        return `${minute} : ${second}`
+      },
+      _pad(num, n = 2) {
+        let len = num.toString().length
+        while (len < n) {
+          num = '0' + num
+          len += 1
+        }
+        return num
+      },
       _getPosAndScale() {
         // 获取初始的位置
         const targetWidth = 40
@@ -185,7 +251,8 @@
       },
       ...mapMutations({
         setFullScreen: 'SET_FULL_SCREEN',
-        setPlayingState: 'SET_PLAYING_STATE'
+        setPlayingState: 'SET_PLAYING_STATE',
+        setCurrentIndex: 'SET_CURRENT_INDEX'
       })
     }
   }
