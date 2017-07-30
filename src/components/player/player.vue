@@ -33,12 +33,13 @@
           <div class="progress-wrapper">
             <span class="time time-l">{{format(currentTime)}}</span>
             <div class="progress-bar-wrapper">
+              <progress-bar :percent="percent" @percentChange="onProgressBarChange"></progress-bar>
             </div>
             <span class="time time-r">{{format(currentSong.duration)}}</span>
           </div>
           <div class="operators">
             <div class="icon i-left">
-              <i class="anticon icon-retweet"></i>
+              <i :class="iconMode" @click="changeMode"></i>
             </div>
             <div class="icon i-left" :class="disableCls">
               <i @click="prev" class="anticon icon-stepbackward"></i>
@@ -66,14 +67,16 @@
           <p class="desc" v-html="currentSong.singer"></p>
         </div>
         <div class="control">
-          <i @click.stop="togglePlaying" :class="playMiniIcon"></i>
+          <progress-circle :radius="32" :percent="percent">
+            <i @click.stop="togglePlaying" :class="playMiniIcon" class="icon-mini"></i>
+          </progress-circle>
         </div>
         <div class="control">
           <i class="anticon icon-menufold"></i>
         </div>
       </div>
     </transition>
-    <audio ref="audio" :src="currentSong.url" @canplay="ready" @error="error" @timeupdate="updateTime"></audio>
+    <audio ref="audio" :src="currentSong.url" @canplay="ready" @error="error" @timeupdate="updateTime" @ended="end"></audio>
   </div>
 </template>
 
@@ -81,6 +84,12 @@
   import { mapGetters, mapMutations } from 'vuex'
   import animations from 'create-keyframe-animation'
   import {prefixStyle} from 'common/js/dom'
+
+  import ProgressBar from 'base/progress-bar/progress-bar'
+  import ProgressCircle from 'base/progress-circle/progress-circle'
+
+  import {playMode} from 'common/js/config'
+  import {shuffle} from 'common/js/util'
 
   const transform = prefixStyle('transform')
   export default {
@@ -95,25 +104,37 @@
       cdCls() {
         return this.playing ? 'play' : 'play pause'
       },
+      iconMode() {
+        return this.mode === playMode.sequence ? 'anticon icon-swap' : this.mode === playMode.loop ? 'anticon icon-retweet' : 'anticon icon-sharealt'
+      },
       playIcon() {
-        return this.playing ? 'anticon icon-pausecircle' : 'anticon icon-play'
+        return this.playing ? 'anticon icon-pausecircleo' : 'anticon icon-playcircleo'
       },
       playMiniIcon() {
-        return this.playing ? 'anticon icon-pausecircle' : 'anticon icon-play'
+        return this.playing ? 'anticon icon-pausecircleo' : 'anticon icon-playcircleo'
       },
       disableCls() {
         return this.songReady ? '' : 'disable'
+      },
+      percent() {
+        return this.currentTime / this.currentSong.duration
       },
       ...mapGetters([
         'fullScreen',
         'playlist',
         'currentSong',
         'playing',
-        'currentIndex'
+        'currentIndex',
+        'mode',
+        'sequenceList'
       ])
     },
     watch: {
-      currentSong() {
+      currentSong(newSong, oldSong) {
+        // id没变什么都不做
+        if (newSong.id === oldSong.id) {
+          return
+        }
         // DOM 要ready后
         this.$nextTick(() => {
           this.$refs.audio.play()
@@ -134,6 +155,17 @@
       },
       open() {
         this.setFullScreen(true)
+      },
+      end() {
+        if (this.mode === playMode.loop) {
+          this.loop()
+        } else {
+          this.next()
+        }
+      },
+      loop() {
+        this.$refs.audio.currentTime = 0
+        this.$refs.audio.play()
       },
       enter(el, done) {
         // 使用create-keyframe-animation
@@ -225,6 +257,35 @@
         const second = this._pad(interval % 60)
         return `${minute} : ${second}`
       },
+      onProgressBarChange(percent) {
+        // console.log(this.$refs.audio.currentTime, percent)
+        this.$refs.audio.currentTime = this.currentSong.duration * percent
+        if (!this.playing) {
+          this.togglePlaying()
+        }
+      },
+      changeMode() {
+        const mode = (this.mode + 1) % 3
+        this.setPlayMode(mode)
+        // 由原来的列表产生新的列表
+        let list = null
+        switch (mode) {
+          case playMode.random:
+            list = shuffle(this.sequenceList)
+            break
+          default:
+            list = this.sequenceList
+        }
+        this.resetCurrentIndex(list)
+        this.setPlaylist(list)
+      },
+      resetCurrentIndex(list) {
+        // 找到当前歌曲的索引
+        let index = list.findIndex((item) => {
+          return item.id === this.currentSong.id
+        })
+        this.setCurrentIndex(index)
+      },
       _pad(num, n = 2) {
         let len = num.toString().length
         while (len < n) {
@@ -252,8 +313,14 @@
       ...mapMutations({
         setFullScreen: 'SET_FULL_SCREEN',
         setPlayingState: 'SET_PLAYING_STATE',
-        setCurrentIndex: 'SET_CURRENT_INDEX'
+        setCurrentIndex: 'SET_CURRENT_INDEX',
+        setPlayMode: 'SET_PLAY_MODE',
+        setPlaylist: 'SET_PLAYLIST'
       })
+    },
+    components: {
+      ProgressBar,
+      ProgressCircle
     }
   }
 </script>
@@ -399,9 +466,9 @@
           .time
             color: $color-content
             font-size: $font-size-small
-            flex: 0 0 30px
+            flex: 0 0 35px
             line-height: 30px
-            width: 30px
+            width: 35px
             &.time-l
               text-align: left
             &.time-r
