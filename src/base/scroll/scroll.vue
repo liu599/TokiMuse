@@ -1,7 +1,6 @@
 <template>
   <div ref="wrapper">
-    <slot>
-    </slot>
+    <slot></slot>
   </div>
 </template>
 
@@ -18,13 +17,13 @@
         type: Boolean,
         default: true
       },
-      data: {
-        type: Array,
-        default: null
-      },
       listenScroll: {
         type: Boolean,
         default: false
+      },
+      data: {
+        type: Array,
+        default: null
       }
     },
     mounted() {
@@ -41,19 +40,19 @@
           probeType: this.probeType,
           click: this.click
         })
-        // 监听, 如果允许就派发事件
+
         if (this.listenScroll) {
-          let self = this
+          let me = this
           this.scroll.on('scroll', (pos) => {
-            self.$emit('scroll', pos)
+            me.$emit('scroll', pos)
           })
         }
       },
-      enable() {
-        this.scroll && this.scroll.enable()
-      },
       disable() {
         this.scroll && this.scroll.disable()
+      },
+      enable() {
+        this.scroll && this.scroll.enable()
       },
       refresh() {
         this.scroll && this.scroll.refresh()
@@ -65,7 +64,6 @@
         this.scroll && this.scroll.scrollToElement.apply(this.scroll, arguments)
       }
     },
-    // 查看数据的变化
     watch: {
       data() {
         setTimeout(() => {
@@ -74,9 +72,7 @@
       }
     }
   }
-
 </script>
 
 <style scoped lang="stylus" rel="stylesheet/stylus">
-
 </style>
