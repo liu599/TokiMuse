@@ -5,6 +5,7 @@ import Recommend from 'components/recommend/recommend'
 import Search from 'components/search/search'
 import Singer from 'components/singer/singer'
 import Radio from 'components/radio/radio'
+import Disc from 'components/disc/disc'
 
 import SingerDetail from 'components/singer-detail/singer-detail'
 
@@ -31,7 +32,13 @@ export default new Router({
     {
       path: '/recommend',
       name: 'Recommend',
-      component: Recommend
+      component: Recommend,
+      children: [
+        {
+          path: ':id',
+          component: Disc
+        }
+      ]
     },
     {
       path: '/search',
