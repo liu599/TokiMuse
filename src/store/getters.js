@@ -2,6 +2,7 @@
  * getter
  * Created by tokei on 2017/7/13.
  */
+// import state from './state'
 
 export const singer = state => state.singer
 
@@ -23,3 +24,4 @@ export const currentSong = (state) => {
 
 export const disc = (state) => state.disc
 
+export const topList = (state) => state.topList

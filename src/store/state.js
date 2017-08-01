@@ -10,7 +10,8 @@ const state = {
   sequenceList: [],
   mode: playMode.sequence,
   currentIndex: -1,
-  disc: {}
+  disc: {},
+  topList: {}
 }
 
 // 播放器： 数据是全局的(多个组件可以打开)
