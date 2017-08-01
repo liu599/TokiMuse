@@ -85,12 +85,14 @@ apiRoutes.get('/disst', function (req, res) {
     // console.log(ret)
     // 处理掉jsonp的包裹
     if (typeof ret === 'string') {
-      var reg = /{[^()]+}/
+      var reg = /{[^]+}/
       var matches = ret.match(reg)
-      // console.log(matches[0])
+      if (matches) {
+        ret = JSON.parse(matches[0])
+      }
     }
     if (matches) {
-      res.json(matches[0])
+      res.json(ret)
      }
   }).catch((e) => {
     console.log(e)
