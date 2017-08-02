@@ -1,9 +1,8 @@
 <template>
   <transition name="slide">
-    <music-list :title="title" :bg-image="bgImage" :songs="songs"></music-list>
+    <music-list :rank="rank" :title="title" :bg-image="bgImage" :songs="songs"></music-list>
   </transition>
 </template>
-
 <script type="text/ecmascript-6">
   import MusicList from 'components/music-list/music-list'
   import {mapGetters} from 'vuex'
@@ -36,7 +35,8 @@
     },
     data() {
       return {
-        songs: []
+        songs: [],
+        rank: true
       }
     },
     methods: {
