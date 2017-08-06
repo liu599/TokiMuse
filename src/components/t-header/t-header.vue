@@ -6,7 +6,8 @@
     <div class="search">
       <input class="search-input"
              name="search-input"
-             placeholder="Search..." />
+             placeholder="Search..."
+             @click="changeView"/>
     </div>
     <div class="playing"></div>
   </div>
@@ -14,7 +15,11 @@
 
 <script type="text/ecmascript-6">
   export default {
-    name: 'app'
+    methods: {
+      changeView() {
+        this.$emit('changeView')
+      }
+    }
   }
 </script>
 

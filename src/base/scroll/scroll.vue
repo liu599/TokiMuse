@@ -24,6 +24,10 @@
       data: {
         type: Array,
         default: null
+      },
+      pullup: {
+        type: Boolean,
+        default: false
       }
     },
     mounted() {
@@ -45,6 +49,15 @@
           let me = this
           this.scroll.on('scroll', (pos) => {
             me.$emit('scroll', pos)
+          })
+        }
+
+        if (this.pullup) {
+          let self = this
+          this.scroll.on('scrollEnd', () => {
+            if (self.scroll.y <= (self.scroll.maxScrollY + 50)) {
+              self.$emit('scrollToEnd')
+            }
           })
         }
       },

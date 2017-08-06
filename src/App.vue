@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <t-header></t-header>
+    <t-header @changeView="changeView"></t-header>
     <tab></tab>
     <keep-alive>
       <router-view></router-view>
@@ -18,7 +18,13 @@
   import Player from 'components/player/player'
 
   export default {
-    name: 'app',
+    methods: {
+      changeView() {
+        this.$router.push({
+          path: `/search`
+        })
+      }
+    },
     components: {
       THeader,
       Tab,
