@@ -2,10 +2,12 @@
   <scroll class="suggest"
           :data="result"
           :pullup="pullup"
+          :beforeScroll="beforeScroll"
           @scrollToEnd="searchMore"
+          @beforeScroll="listScroll"
           ref="suggest">
     <ul class="suggest-list">
-      <li class="suggest-item" v-for="item in result">
+      <li @click="selectItem(item)" class="suggest-item" v-for="item in result">
         <div class="icon anticon">
           <i :class="genIconCls(item)"></i>
         </div>
@@ -15,6 +17,9 @@
       </li>
       <loading v-show="hasMore" title=""></loading>
     </ul>
+    <div class="no-result-wrapper" v-show="!hasMore && !result.length">
+      <no-result title="抱歉!未找到搜索结果哦"></no-result>
+    </div>
   </scroll>
 </template>
 
@@ -25,6 +30,9 @@
   // import {filterSinger} from 'common/js/song'
   import {createSong} from 'common/js/song'
   import Loading from 'base/loading/loading'
+  import Singer from 'common/js/singer'
+  import {mapMutations, mapActions} from 'vuex'
+  import NoResult from 'base/no-result/no-result'
 
   const TYPE_SINGER = 'singer'
   const PER_PAGE = 20
@@ -46,10 +54,25 @@
         page: 1,
         result: [],
         pullup: true,
-        hasMore: true
+        hasMore: true,
+        beforeScroll: true
       }
     },
     methods: {
+      selectItem(item) {
+        if (item.type === TYPE_SINGER) {
+          const singer = new Singer({
+            id: item.singermid,
+            name: item.singername
+          })
+          this.$router.push({
+            path: `/search/${singer.id}`
+          })
+          this.setSinger(singer)
+        } else {
+          this.insertSong(item)
+        }
+      },
       getDisplayName(item) {
         if (item.type === TYPE_SINGER) {
           return item.singername
@@ -91,6 +114,9 @@
           }
         })
       },
+      listScroll() {
+        this.$emit('listScroll')
+      },
       _checkMore(data) {
         const songs = data.song
         if (!songs.list.length || (songs.curnum + songs.curpage * PER_PAGE) > songs.totalnum) {
@@ -119,7 +145,13 @@
           }
         })
         return ret
-      }
+      },
+      ...mapMutations({
+        setSinger: 'SET_SINGER'
+      }),
+      ...mapActions([
+        'insertSong'
+      ])
     },
     watch: {
       query() {
@@ -128,7 +160,8 @@
     },
     components: {
       Scroll,
-      Loading
+      Loading,
+      NoResult
     }
   }
 </script>

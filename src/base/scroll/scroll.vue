@@ -28,6 +28,10 @@
       pullup: {
         type: Boolean,
         default: false
+      },
+      beforeScroll: {
+        type: Boolean,
+        default: false
       }
     },
     mounted() {
@@ -58,6 +62,13 @@
             if (self.scroll.y <= (self.scroll.maxScrollY + 50)) {
               self.$emit('scrollToEnd')
             }
+          })
+        }
+        // 移动端触发滚动前, 失去焦点, 收起键盘
+        if (this.beforeScroll) {
+          let self2 = this
+          this.scroll.on('beforeScrollStart', () => {
+            self2.$emit('beforeScroll')
           })
         }
       },
