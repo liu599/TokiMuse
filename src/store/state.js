@@ -2,6 +2,7 @@
  * Created by tokei on 2017/7/13.
  */
 import {playMode} from 'common/js/config'
+import {loadSearch} from 'common/js/cache'
 const state = {
   singer: {},
   playing: false,
@@ -11,7 +12,8 @@ const state = {
   mode: playMode.sequence,
   currentIndex: -1,
   disc: {},
-  topList: {}
+  topList: {},
+  searchHistory: loadSearch()
 }
 
 // 播放器： 数据是全局的(多个组件可以打开)

@@ -59,6 +59,9 @@
       }
     },
     methods: {
+      refresh() {
+        this.$refs.suggest.refresh()
+      },
       selectItem(item) {
         if (item.type === TYPE_SINGER) {
           const singer = new Singer({
@@ -72,6 +75,8 @@
         } else {
           this.insertSong(item)
         }
+        // 这个组件不需要做存储历史的事件, 派发事件后交给外层组件完成
+        this.$emit('select')
       },
       getDisplayName(item) {
         if (item.type === TYPE_SINGER) {
