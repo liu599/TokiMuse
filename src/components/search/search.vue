@@ -18,7 +18,7 @@
             <h1 class="title">
               <span class="text">搜索历史</span>
               <span class="clear" @click="showConfirm">
-              <i class="anticon icon-delete"></i>
+              <i class="anticon icon-deleteuser"></i>
             </span>
             </h1>
             <search-list :searches="searchHistory"

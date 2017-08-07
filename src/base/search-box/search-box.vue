@@ -2,7 +2,7 @@
   <div class="search-box">
     <i class="anticon icon-search1"></i>
     <input ref="query" v-model="query" class="box" :placeholder="placeholder" />
-    <i @click="clear" v-show="query" class="anticon icon-disconnect"></i>
+    <i @click="clear" v-show="query" class="anticon icon-closecircleo"></i>
   </div>
 </template>
 
@@ -56,7 +56,7 @@
     padding: 0 6px
     height: 40px
     border-radius: 6px
-    .icon-search
+    .icon-search1
       font-size: 24px
       color: $color-primary
     .box
