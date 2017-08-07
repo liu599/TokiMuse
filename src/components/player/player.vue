@@ -105,16 +105,18 @@
   import ProgressCircle from 'base/progress-circle/progress-circle'
 
   import {playMode} from 'common/js/config'
-  import {shuffle} from 'common/js/util'
 
   import Lyric from 'lyric-parser'
   import Scroll from 'base/scroll/scroll'
   import Playlist from 'components/playlist/playlist'
 
+  import {playerMixin} from 'common/js/mixin'
+
   const transform = prefixStyle('transform')
   const transitionDuration = prefixStyle('transitionDuration')
 
   export default {
+    mixins: [playerMixin],
     data() {
       // 标志
       return {
@@ -130,9 +132,6 @@
       cdCls() {
         return this.playing ? 'play' : 'play pause'
       },
-      iconMode() {
-        return this.mode === playMode.sequence ? 'anticon icon-swap' : this.mode === playMode.loop ? 'anticon icon-retweet' : 'anticon icon-sharealt'
-      },
       playIcon() {
         return this.playing ? 'anticon icon-pausecircleo' : 'anticon icon-playcircleo'
       },
@@ -147,12 +146,8 @@
       },
       ...mapGetters([
         'fullScreen',
-        'playlist',
-        'currentSong',
         'playing',
-        'currentIndex',
-        'mode',
-        'sequenceList'
+        'currentIndex'
       ])
     },
     created() {
@@ -327,28 +322,6 @@
       showPlaylist () {
         this.$refs.playlist.show()
       },
-      changeMode() {
-        const mode = (this.mode + 1) % 3
-        this.setPlayMode(mode)
-        // 由原来的列表产生新的列表
-        let list = null
-        switch (mode) {
-          case playMode.random:
-            list = shuffle(this.sequenceList)
-            break
-          default:
-            list = this.sequenceList
-        }
-        this.resetCurrentIndex(list)
-        this.setPlaylist(list)
-      },
-      resetCurrentIndex(list) {
-        // 找到当前歌曲的索引
-        let index = list.findIndex((item) => {
-          return item.id === this.currentSong.id
-        })
-        this.setCurrentIndex(index)
-      },
       getLyric() {
         this.currentSong.getLyric().then((lyric) => {
           this.currentLyric = new Lyric(lyric, this.handleLyric)
@@ -455,11 +428,7 @@
         }
       },
       ...mapMutations({
-        setFullScreen: 'SET_FULL_SCREEN',
-        setPlayingState: 'SET_PLAYING_STATE',
-        setCurrentIndex: 'SET_CURRENT_INDEX',
-        setPlayMode: 'SET_PLAY_MODE',
-        setPlaylist: 'SET_PLAYLIST'
+        setFullScreen: 'SET_FULL_SCREEN'
       })
     },
     components: {
