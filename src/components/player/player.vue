@@ -97,7 +97,7 @@
 </template>
 
 <script type="text/ecmascript-6">
-  import { mapGetters, mapMutations } from 'vuex'
+  import {mapGetters, mapMutations, mapActions} from 'vuex'
   import animations from 'create-keyframe-animation'
   import {prefixStyle} from 'common/js/dom'
 
@@ -293,6 +293,7 @@
       },
       ready() {
         this.songReady = true
+        this.savePlayHistory(this.currentSong)
       },
       error() {
         // 加载失败不会影响正常使用
@@ -429,7 +430,10 @@
       },
       ...mapMutations({
         setFullScreen: 'SET_FULL_SCREEN'
-      })
+      }),
+      ...mapActions([
+        'savePlayHistory'
+      ])
     },
     components: {
       ProgressBar,

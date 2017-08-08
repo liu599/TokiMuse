@@ -4,7 +4,7 @@
       <search-box ref="searchBox" @query="onQueryChange"></search-box>
     </div>
     <div ref="shortcutWrapper" class="shortcut-wrapper" v-show="!query">
-      <scroll class="shortcut" ref="shortcut" :data="shortCut">
+      <scroll :refreshDelay="refreshDelay" class="shortcut" ref="shortcut" :data="shortCut">
         <div>
           <div class="hot-key">
             <h1 class="title">热门搜索</h1>
@@ -42,10 +42,10 @@
   import SearchBox from 'base/search-box/search-box'
   import Confirm from 'base/confirm/confirm'
   import Scroll from 'base/scroll/scroll'
-  import {playlistMixin} from 'common/js/mixin'
+  import {playlistMixin, searchMixin} from 'common/js/mixin'
   import {getHotKey} from 'api/search'
   import {ERR_OK} from 'api/config'
-  import {mapActions, mapGetters} from 'vuex'
+  import {mapActions} from 'vuex'
 
   // Scroll的引入
   // 第一是计算时Scroll的内部如果有两个元素的话只能计算第一个, 需要外层包裹
@@ -53,7 +53,7 @@
   // 第三是DOM没有被显示
 
   export default {
-    mixins: [playlistMixin],
+    mixins: [playlistMixin, searchMixin],
     created() {
       this._getHotKey()
     },
@@ -67,10 +67,7 @@
       // 两个数据有一个发生改变, 就会重新计算
       shortCut() {
         return this.hotKey.concat(this.searchHistory)
-      },
-      ...mapGetters([
-        'searchHistory'
-      ])
+      }
     },
     watch: {
       query(newQuery) {
@@ -89,19 +86,6 @@
         this.$refs.shortcut.refresh()
         this.$refs.suggest.refresh()
       },
-      addQuery(query) {
-        this.$refs.searchBox.setQuery(query)
-      },
-      onQueryChange(query) {
-        this.query = query
-      },
-      blurInput() {
-        this.$refs.searchBox.blur()
-      },
-      saveSearch() {
-        // 需要永久缓存
-        this.saveSearchHistory(this.query)
-      },
       showConfirm() {
         this.$refs.confirm.text = '将清空所有记忆数据, 是否确认?'
         this.$refs.confirm.show()
@@ -110,13 +94,11 @@
         getHotKey().then((res) => {
           if (res.code === ERR_OK) {
             // console.log(res.data.hotkey)
-            this.hotKey = res.data.hotkey.slice(0, 10)
+            this.hotKey = res.data.hotkey.slice(0, 12)
           }
         })
       },
       ...mapActions([
-        'saveSearchHistory',
-        'deleteSearchHistory',
         'clearSearchHistory'
       ])
     },
