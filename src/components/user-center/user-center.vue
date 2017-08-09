@@ -1,27 +1,47 @@
 <template>
   <transition name="slide">
     <div class="user-center">
-      <div class="back">
+      <div class="back" @click="back">
         <i class="anticon icon-left"></i>
       </div>
       <div class="switches-wrapper">
         <switches @switch="switchItem" :switches="switches" :currentIndex="currentIndex"></switches>
       </div>
-      <div ref="playBtn" class="play-btn">
+      <div ref="playBtn" class="play-btn" @click.stop="random">
         <i class="anticon icon-play"></i>
         <span class="text">随机播放全部</span>
       </div>
        <div class="list-wrapper" ref="listWrapper">
-
+         <scroll ref="favoriteList" class="list-scroll" v-if="currentIndex===0" :data="favoriteList">
+           <div class="list-inner">
+             <song-list :songs="favoriteList" @select="selectSong"></song-list>
+           </div>
+         </scroll>
+         <scroll ref="playList" class="list-scroll" v-if="currentIndex===1" :data="playHistory">
+           <div class="list-inner">
+             <song-list @select="selectSong"
+                        :songs="playHistory"></song-list>
+           </div>
+         </scroll>
        </div>
+      <div class="no-result-wrapper" v-show="noResult">
+        <no-result :title="noResultDesc"></no-result>
+      </div>
     </div>
   </transition>
 </template>
 
 <script type="text/ecmascript-6">
+  import Song from 'common/js/song'
+  import Scroll from 'base/scroll/scroll'
   import Switches from 'base/switches/switches'
+  import SongList from 'base/song-list/song-list'
+  import NoResult from 'base/no-result/no-result'
+  import {mapGetters, mapActions} from 'vuex'
+  import {playlistMixin} from 'common/js/mixin'
 
   export default {
+    mixins: [playlistMixin],
     data() {
       return {
         currentIndex: 0,
@@ -31,13 +51,56 @@
         ]
       }
     },
+    computed: {
+      noResult() {
+        return this.currentIndex === 0 ? (!this.favoriteList.length) : (!this.playHistory.length)
+      },
+      noResultDesc() {
+        return this.currentIndex === 0 ? '暂无收藏歌曲' : '最近没听什么歌'
+      },
+      ...mapGetters([
+        'favoriteList',
+        'playHistory'
+      ])
+    },
     methods: {
+      handlePlaylist(playlist) {
+        const bottom = playlist.length > 0 ? '60px' : ''
+        this.$refs.listWrapper.bottom = bottom
+        this.$refs.favoriteList && this.$refs.favoriteList.refresh()
+        this.$refs.playList && this.$refs.playList.refresh()
+      },
       switchItem(index) {
         this.currentIndex = index
-      }
+      },
+      selectSong(song) {
+        this.insertSong(new Song(song))
+      },
+      back() {
+        this.$router.back()
+      },
+      random() {
+        let list = this.currentIndex === 0 ? this.favoriteList : this.playHistory
+        if (list.length === 0) {
+          return
+        }
+        list = list.map((song) => {
+          return new Song(song)
+        })
+        this.randomPlay({
+          list
+        })
+      },
+      ...mapActions([
+        'insertSong',
+        'randomPlay'
+      ])
     },
     components: {
-      Switches
+      Scroll,
+      Switches,
+      SongList,
+      NoResult
     }
   }
 </script>
