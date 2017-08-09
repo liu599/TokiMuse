@@ -8,7 +8,6 @@
       <span class="dot"
             :class="{active: currentPageIndex === index }"
             v-for="(item, index) in dots">
-
       </span>
     </div>
   </div>
@@ -49,12 +48,35 @@
         }
       }, 20)
       window.addEventListener('resize', () => {
-        if (!this.slider) {
+        if (!this.slider || !this.slider.enabled) {
           return
         }
         this._setSliderWidth(true)
         this.slider.refresh()
       })
+    },
+    activated() {
+      this.slider.enable()
+      let pageIndex = this.slider.getCurrentPage().pageX
+      if (pageIndex > this.dots.length) {
+        pageIndex = pageIndex % this.dots.length
+      }
+      this.slider.goToPage(pageIndex, 0, 0)
+      if (this.loop) {
+        pageIndex -= 1
+      }
+      this.currentPageIndex = pageIndex
+      if (this.autoPlay) {
+        this._play()
+      }
+    },
+    deactivated() {
+      this.slider.disable()
+      clearTimeout(this.timer)
+    },
+    beforeDestroy() {
+      this.slider.disable()
+      clearTimeout(this.timer)
     },
     methods: {
       _initDots() {

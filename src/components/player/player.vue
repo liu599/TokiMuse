@@ -92,7 +92,7 @@
       </div>
     </transition>
     <playlist ref="playlist"></playlist>
-    <audio ref="audio" :src="currentSong.url" @canplay="ready" @error="error" @timeupdate="updateTime" @ended="end"></audio>
+    <audio ref="audio" :src="currentSong.url" @play="ready" @error="error" @timeupdate="updateTime" @ended="end"></audio>
   </div>
 </template>
 
@@ -167,9 +167,15 @@
 //          this.$refs.audio.play()
 //          this.getLyric()
 //        })
-        // 保证微信从后台切到前台能继续播放
-        setTimeout(() => {
+        // 保证app从后台切到前台能继续播放
+        // 当我们快速切换的时候, 在1s之内完成。 点击播放按钮, 在1s中之内PAUSE先执行
+        // 之后执行play方法
+        // 看上去暂停了, 然后还在播放
+        // 需要debounce
+        clearTimeout(this.time)
+        this.timer = setTimeout(() => {
           this.$refs.audio.play()
+          // 这个方法是异步的, 需要在内部做一个判断, 如果currentSong变了, 就切断加载
           this.getLyric()
         }, 1000)
       },
@@ -260,6 +266,8 @@
         }
         if (this.playlist.length === 1) {
           this.loop()
+          // 修正切换后songReady不对
+          return
         } else {
           let index = this.currentIndex - 1
           if (index === -1) {
@@ -279,6 +287,8 @@
         // 处理只有一首的情况
         if (this.playlist.length === 1) {
           this.loop()
+          // 修正切换后songReady不对
+          return
         } else {
           let index = this.currentIndex + 1
           if (index === this.playlist.length) {
@@ -325,6 +335,9 @@
       },
       getLyric() {
         this.currentSong.getLyric().then((lyric) => {
+          if (this.currentSong.lyric !== lyric) {
+            return
+          }
           this.currentLyric = new Lyric(lyric, this.handleLyric)
           if (this.playing) {
             this.currentLyric.play()
