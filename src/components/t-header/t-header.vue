@@ -1,8 +1,8 @@
 <template>
   <div class="t-header">
-    <div class="icon">
-      <i class="anticon">&#xe661;</i>
-    </div>
+    <router-link to="/user" class="icon" tag="div">
+      <i class="anticon icon-user"></i>
+    </router-link>
     <div class="search">
       <input class="search-input"
              name="search-input"

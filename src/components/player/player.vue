@@ -66,7 +66,7 @@
               <i @click="next" class="anticon icon-stepforward"></i>
             </div>
             <div class="icon i-right">
-              <i class="anticon icon-hearto"></i>
+              <i class="anticon" @click="toggleFavorite(currentSong)" :class="getFavoriteIcon(currentSong)"></i>
             </div>
           </div>
         </div>

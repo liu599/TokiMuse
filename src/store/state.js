@@ -2,7 +2,7 @@
  * Created by tokei on 2017/7/13.
  */
 import {playMode} from 'common/js/config'
-import {loadSearch, loadPlay} from 'common/js/cache'
+import {loadSearch, loadPlay, loadFavorite} from 'common/js/cache'
 const state = {
   singer: {},
   playing: false,
@@ -14,7 +14,8 @@ const state = {
   disc: {},
   topList: {},
   searchHistory: loadSearch(),
-  playHistory: loadPlay()
+  playHistory: loadPlay(),
+  favoriteList: loadFavorite()
 }
 
 // 播放器： 数据是全局的(多个组件可以打开)

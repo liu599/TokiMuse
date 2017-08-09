@@ -23,9 +23,8 @@ export const playlistMixin = {
     }
   }
 }
-
-// 使组件共用一些逻辑
-// 把需要公用的逻辑粘贴过来
+  // 使组件共用一些逻辑
+  // 把需要公用的逻辑粘贴过来
 import {playMode} from 'common/js/config'
 import {shuffle} from 'common/js/util'
 export const playerMixin = {
@@ -37,11 +36,12 @@ export const playerMixin = {
       'playlist',
       'currentSong',
       'mode',
-      'sequenceList'
+      'sequenceList',
+      'favoriteList'
     ])
   },
   methods: {
-    changeMode() {
+    changeMode () {
       const mode = (this.mode + 1) % 3
       this.setPlayMode(mode)
       // 由原来的列表产生新的列表
@@ -56,20 +56,49 @@ export const playerMixin = {
       this.resetCurrentIndex(list)
       this.setPlaylist(list)
     },
-    resetCurrentIndex(list) {
+    resetCurrentIndex (list) {
       // 找到当前歌曲的索引
       let index = list.findIndex((item) => {
         return item.id === this.currentSong.id
       })
       this.setCurrentIndex(index)
     },
+    toggleFavorite(song) {
+      if (this.isFavorite(song)) {
+        this.deleteFavoriteList(song)
+      } else {
+        this.saveFavoriteList(song)
+      }
+    },
+    getFavoriteIcon(song) {
+      if (this.isFavorite(song)) {
+        return 'icon-heart'
+      }
+      return 'icon-hearto'
+    },
+    isFavorite(song) {
+      const index = this.favoriteList.findIndex((item) => {
+        return item.id === song.id
+      })
+      return index > -1
+    },
     ...mapMutations({
-      setPlayingState: 'SET_PLAYING_STATE',
-      setCurrentIndex: 'SET_CURRENT_INDEX',
       setPlayMode: 'SET_PLAY_MODE',
-      setPlaylist: 'SET_PLAYLIST'
-    })
-  }
+      setPlaylist: 'SET_PLAYLIST',
+      setCurrentIndex: 'SET_CURRENT_INDEX',
+      setPlayingState: 'SET_PLAYING_STATE'
+    }),
+    ...mapActions([
+      'saveFavoriteList',
+      'deleteFavoriteList'
+    ])
+  },
+  ...mapMutations({
+    setPlayingState: 'SET_PLAYING_STATE',
+    setCurrentIndex: 'SET_CURRENT_INDEX',
+    setPlayMode: 'SET_PLAY_MODE',
+    setPlaylist: 'SET_PLAYLIST'
+  })
 }
 
 export const searchMixin = {
