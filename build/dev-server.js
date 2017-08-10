@@ -27,20 +27,10 @@ var app = express()
 
 /*使用Api-router欺骗对方Api
 * 需要知道request head
-* refer
- * express路由发出HTTP请求, 将浏览器的参数给QQ服务端
- * 注意发布部署时public path需要添加CDN地址 */
+*/
 var apiRoutes = express.Router()
 
-var configPublic = require('../config/index')
-
-function resolvePublic(dir) {
-  var publicPathTrim = configPublic.build.assetsPublicPath.substring(0, configPublic.build.assetsPublicPath.length - 1)
-  return publicPathTrim + dir
-}
-
-
-apiRoutes.get(resolvePublic('/getDiscList'), function (req, res) {
+apiRoutes.get('/getDiscList', function (req, res) {
   var url = 'https://c.y.qq.com/splcloud/fcgi-bin/fcg_get_diss_by_tag.fcg'
   axios.get(url, {
     headers: {
@@ -55,7 +45,7 @@ apiRoutes.get(resolvePublic('/getDiscList'), function (req, res) {
   })
 })
 
-apiRoutes.get(resolvePublic('/lyric'), function (req, res) {
+apiRoutes.get('/lyric', function (req, res) {
   var url = 'https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new.fcg'
 
   axios.get(url, {
@@ -80,7 +70,7 @@ apiRoutes.get(resolvePublic('/lyric'), function (req, res) {
   })
 })
 
-apiRoutes.get(resolvePublic('/disst'), function (req, res) {
+apiRoutes.get('/disst', function (req, res) {
   var url = 'https://c.y.qq.com/qzone/fcg-bin/fcg_ucc_getcdinfo_byids_cp.fcg'
 
   axios.get(url, {
@@ -108,7 +98,7 @@ apiRoutes.get(resolvePublic('/disst'), function (req, res) {
   })
 })
 
-app.use(resolvePublic('/api'), apiRoutes)
+app.use('/api', apiRoutes)
 
 var compiler = webpack(webpackConfig)
 

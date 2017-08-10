@@ -2,6 +2,8 @@ import jsonp from 'common/js/jsonp'
 import {commonParams, options} from './config'
 import axios from 'axios'
 
+const debug = process.env.NODE_ENV !== 'production'
+
 export function getRecommend() {
   // QQ音乐手机版的API地址
   const url = 'https://c.y.qq.com/musichall/fcgi-bin/fcg_yqqhomepagerecommend.fcg'
@@ -17,7 +19,8 @@ export function getRecommend() {
 
 export function getDiscList() {
   // 设置前端路由转发后, 地址为api
-  const url = '/api/getDiscList'
+  // 线上环境地址
+  const url = debug ? '/api/getDiscList' : 'http://fm.nekohand.moe/api/getDiscList'
 
   const data = Object.assign({}, commonParams, {
     platform: 'yqq',
@@ -37,9 +40,10 @@ export function getDiscList() {
     return Promise.resolve(res.data)
   })
 }
+
+// export function getSongList (disstid) {
 //
-// export function getSongList(disstid) {
-//   const url = 'https://c.y.qq.com/qzone/fcg-bin/fcg_ucc_getcdinfo_byids_cp.fcg'
+//   const url = debug ? '/api/disst' : 'http://fm.nekohand.moe/api/disst'
 //
 //   const data = Object.assign({}, commonParams, {
 //     disstid,
@@ -52,11 +56,16 @@ export function getDiscList() {
 //     needNewCode: 0
 //   })
 //
-//   return jsonp(url, data, options)
+//   return axios.get(url, {
+//     params: data
+//   }).then((res) => {
+//     return Promise.resolve(res.data)
+//   })
 // }
 
-export function getSongList (disstid) {
-  const url = '/api/disst'
+
+export function getSongList(disstid) {
+  const url = 'https://c.y.qq.com/qzone/fcg-bin/fcg_ucc_getcdinfo_byids_cp.fcg'
 
   const data = Object.assign({}, commonParams, {
     disstid,
@@ -69,9 +78,5 @@ export function getSongList (disstid) {
     needNewCode: 0
   })
 
-  return axios.get(url, {
-    params: data
-  }).then((res) => {
-    return Promise.resolve(res.data)
-  })
+  return jsonp(url, data, options)
 }

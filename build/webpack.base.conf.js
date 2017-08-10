@@ -22,7 +22,6 @@ module.exports = {
     extensions: ['.js', '.vue', '.json'],
     alias: {
       '@': resolve('src'),
-      'src': resolve('src'),
       // 重写静态地址，主文件树下的都需要
       'base': resolve('src/base'),
       'common': resolve('src/common'),
