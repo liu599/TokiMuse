@@ -1,8 +1,12 @@
-# Tokei Music App
+# Tokei Muse Music App
 
-> A music app built with vue-framework
+> A Music App built with vue-framework
+>   (http://fm.nekohand.moe)
 
-> This is an experimental app
+## TODOS
+
+* Input Part
+* Radio Part 
 
 ## Build Setup
 
