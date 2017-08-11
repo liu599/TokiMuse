@@ -8,6 +8,19 @@
 * Input Part
 * Radio Part 
 
+## Test Setup
+
+```bash
+# npm start
+Start Vue develop-server
+
+# npm run build 
+Build for production server
+
+# npm run server
+Run an express server to see the production locally on ***http://localhost:9000***
+```
+
 ## Build Setup
 
 ``` bash
