@@ -71,6 +71,7 @@ export const playerMixin = {
       }
     },
     getFavoriteIcon(song) {
+      console.log(this.isFavorite(song))
       if (this.isFavorite(song)) {
         return 'icon-heart'
       }

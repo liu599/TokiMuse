@@ -21,7 +21,11 @@
     methods: {
       changeView() {
         this.$router.push({
-          path: `/search`
+          path: `/search`,
+          // This will disable the input.
+          params: {
+            fromHead: true
+          }
         })
       }
     },

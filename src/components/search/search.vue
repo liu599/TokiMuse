@@ -1,6 +1,7 @@
 <template>
   <div class="search">
-    <div class="search-box-wrapper">
+    <div class="search-box-wrapper"
+         v-show="this.$route.params.fromHead">
       <search-box ref="searchBox" @query="onQueryChange"></search-box>
     </div>
     <div ref="shortcutWrapper" class="shortcut-wrapper" v-show="!query">

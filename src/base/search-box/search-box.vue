@@ -68,7 +68,7 @@
       font-size: $font-size-medium
       &::placeholder
         color: $color-font-disabled
-    .icon-dismiss
+    .icon-closecircleo
       font-size: 16px
       color: $color-primary
 </style>

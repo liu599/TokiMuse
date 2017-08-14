@@ -6,19 +6,52 @@
     <div class="search">
       <input class="search-input"
              name="search-input"
-             placeholder="Search..."
-             @click="changeView"/>
+             ref="query"
+             v-model="query"
+             :placeholder="placeholder"
+             @click="changeView"
+             @query="onQueryChange"/>
+      <i @click="clear" v-show="query" class="anticon icon-closecircleo"></i>
     </div>
     <div class="playing"></div>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
+  import {debounce} from 'common/js/util'
+  import {searchMixin} from 'common/js/mixin'
   export default {
+    mixins: [searchMixin],
+    props: {
+      placeholder: {
+        type: String,
+        default: '搜索歌曲、歌手'
+      }
+    },
+    data() {
+      return {
+        query: ''
+      }
+    },
     methods: {
       changeView() {
         this.$emit('changeView')
+      },
+      clear() {
+        this.query = ''
+      },
+      setQuery(query) {
+        this.query = query
+      },
+      blur() {
+        this.$refs.query.blur()
       }
+    },
+    created() {
+      // debounce 节流
+      this.$watch('query', debounce((newQuery) => {
+        this.$emit('query', newQuery)
+      }, 200))
     }
   }
 </script>
@@ -52,7 +85,7 @@
       -webkit-box-flex: 1.0
       -moz-box-flex: 1.0
     .search
-      text-align: center
+      text-align: left
       font-size: ($font-size-medium)px
       height: 42px
       width: 40%
@@ -66,14 +99,17 @@
         padding: 4px
         text-indent: 8px
         border-radius: 20px
-        width: 100%
-        vertical-align: middle
+        width: 80%
         -webkit-appearance: none
+        vertical-align: middle
+      .icon-closecircleo
+        margin-left: 4px
+        font-size: 18px
+        color: $color-font-head
+        vertical-align: middle
     .playing
       box-flex: 1.0
       -webkit-box-flex: 1.0
       -moz-box-flex: 1.0
-
-
 </style>
 
