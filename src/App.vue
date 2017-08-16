@@ -16,8 +16,14 @@
   import Tab from 'components/tab/tab'
   // 注册播放器
   import Player from 'components/player/player'
+  import {mapGetters} from 'vuex'
 
   export default {
+    computed: {
+      ...mapGetters([
+        'queryString'
+      ])
+    },
     methods: {
       changeView() {
         this.$router.push({

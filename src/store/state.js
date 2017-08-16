@@ -15,7 +15,8 @@ const state = {
   topList: {},
   searchHistory: loadSearch(),
   playHistory: loadPlay(),
-  favoriteList: loadFavorite()
+  favoriteList: loadFavorite(),
+  queryString: ''
 }
 
 // 播放器： 数据是全局的(多个组件可以打开)

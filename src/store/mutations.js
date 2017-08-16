@@ -36,6 +36,9 @@ const mutations = {
   },
   [types.SET_FAVORITE_LIST](state, favoriteList) {
     state.favoriteList = favoriteList
+  },
+  [types.SET_QUERY_STRING](state, query) {
+    state.queryString = query
   }
 }
 

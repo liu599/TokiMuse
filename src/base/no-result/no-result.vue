@@ -25,7 +25,7 @@
       width: 86px
       height: 90px
       margin: 0 auto
-      // bg-image('no-result')
+      background-image: url('~common/image/default.jpg')
       background-color: turquoise
       background-size: 86px 90px
     .no-result-text

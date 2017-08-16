@@ -1,9 +1,9 @@
 <template>
   <div class="t-header">
-    <router-link to="/user" class="icon" tag="div">
+    <router-link to="/user" class="icon" tag="div" ref="usr">
       <i class="anticon icon-user"></i>
     </router-link>
-    <div class="search">
+    <div class="search" ref="search">
       <input class="search-input"
              name="search-input"
              ref="query"
@@ -12,6 +12,7 @@
              @click="changeView"
              @query="onQueryChange"/>
       <i @click="clear" v-show="query" class="anticon icon-closecircleo"></i>
+      <i class="anticon icon-USB" @click="setQueryString(query)"></i>
     </div>
     <div class="playing"></div>
   </div>
@@ -20,6 +21,7 @@
 <script type="text/ecmascript-6">
   import {debounce} from 'common/js/util'
   import {searchMixin} from 'common/js/mixin'
+  import {mapMutations, mapGetters} from 'vuex';
   export default {
     mixins: [searchMixin],
     props: {
@@ -28,6 +30,11 @@
         default: '搜索歌曲、歌手'
       }
     },
+    computed: {
+      ...mapGetters([
+        'queryString'
+      ])
+    },
     data() {
       return {
         query: ''
@@ -35,17 +42,24 @@
     },
     methods: {
       changeView() {
+        this.$refs.usr.$el.style.display = 'none'
+        this.$refs.search.style.left = '-30px'
+        this.$refs.search.style.width = '80%'
         this.$emit('changeView')
       },
       clear() {
         this.query = ''
+        this.setQueryString('')
       },
       setQuery(query) {
         this.query = query
       },
       blur() {
         this.$refs.query.blur()
-      }
+      },
+      ...mapMutations({
+        setQueryString: 'SET_QUERY_STRING'
+      })
     },
     created() {
       // debounce 节流

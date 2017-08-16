@@ -29,6 +29,9 @@
     height: 42px
     line-height: 42px
     font-size: $font-size-medium
+    background-color: rgba(255,255,255,0.4)
+    border-bottom: 1px solid grey #d3d3d3
+    box-shadow: 0 0 2px 1px #d3d3d3
     .tab-item
       flex: 1
       text-align: center

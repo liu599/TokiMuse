@@ -1,10 +1,9 @@
 <template>
   <div class="search">
-    <div class="search-box-wrapper"
-         v-show="this.$route.params.fromHead">
-      <search-box ref="searchBox" @query="onQueryChange"></search-box>
-    </div>
-    <div ref="shortcutWrapper" class="shortcut-wrapper" v-show="!query">
+    <!--<div class="search-box-wrapper">-->
+      <!--<search-box ref="searchBox" @query="onQueryChange"></search-box>-->
+    <!--</div>-->
+    <div ref="shortcutWrapper" class="shortcut-wrapper" v-show="!queryString">
       <scroll :refreshDelay="refreshDelay" class="shortcut" ref="shortcut" :data="shortCut">
         <div>
           <div class="hot-key">
@@ -29,8 +28,11 @@
         </div>
       </scroll>
     </div>
-    <div ref="searchResult" class="search-result" v-show="query">
-      <suggest ref="suggest" @select="saveSearch" @listScroll="blurInput" :query="query"></suggest>
+    <div ref="searchResult" class="search-result" v-show="queryString">
+      <suggest ref="suggest"
+               @select="saveSearch"
+               @listScroll="blurInput"
+               :query="queryString"></suggest>
     </div>
     <confirm ref="confirm" @confirm="clearSearchHistory" :showFlag="searchHistory.length"></confirm>
     <router-view></router-view>
@@ -43,10 +45,10 @@
   import SearchBox from 'base/search-box/search-box'
   import Confirm from 'base/confirm/confirm'
   import Scroll from 'base/scroll/scroll'
-  import {playlistMixin, searchMixin} from 'common/js/mixin'
+  import {playlistMixin} from 'common/js/mixin'
   import {getHotKey} from 'api/search'
   import {ERR_OK} from 'api/config'
-  import {mapActions} from 'vuex'
+  import {mapActions, mapGetters} from 'vuex'
 
   // Scroll的引入
   // 第一是计算时Scroll的内部如果有两个元素的话只能计算第一个, 需要外层包裹
@@ -54,25 +56,33 @@
   // 第三是DOM没有被显示
 
   export default {
-    mixins: [playlistMixin, searchMixin],
+    mixins: [playlistMixin],
     created() {
       this._getHotKey()
     },
     data() {
       return {
         hotKey: [],
-        query: ''
+        query: '',
+        refreshDelay: 120
       }
     },
     computed: {
       // 两个数据有一个发生改变, 就会重新计算
       shortCut() {
         return this.hotKey.concat(this.searchHistory)
-      }
+      },
+      ...mapGetters([
+        'searchHistory',
+        'queryString'
+      ])
     },
     watch: {
-      query(newQuery) {
-        if (!newQuery) {
+      queryString(newQueryString) {
+        if (!newQueryString) {
+          console.log('triggered')
+          console.log(this.query);
+          this.query = newQueryString
           setTimeout(() => {
             this.$refs.shortcut.refresh()
           }, 20)
@@ -80,6 +90,15 @@
       }
     },
     methods: {
+      blurInput() {
+        // this.$refs.searchBox.blur()
+      },
+      addQuery(query) {
+        this.$refs.searchBox.setQuery(query)
+      },
+      saveSearch() {
+        this.saveSearchHistory(this.query)
+      },
       handlePlaylist(playlist) {
         const bottom = playlist.length > 0 ? '60px' : ''
         this.$refs.shortcutWrapper.style.bottom = bottom
@@ -100,7 +119,9 @@
         })
       },
       ...mapActions([
-        'clearSearchHistory'
+        'clearSearchHistory',
+        'saveSearchHistory',
+        'deleteSearchHistory'
       ])
     },
     components: {
@@ -121,7 +142,7 @@
       margin: 20px
     .shortcut-wrapper
       position: fixed
-      top: 178px
+      top: 100px
       bottom: 0
       width: 100%
       .shortcut
@@ -160,7 +181,7 @@
     .search-result
       position: fixed
       width: 100%
-      top: 178px
+      top: 100px
       bottom: 0
 </style>
 
